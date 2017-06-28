@@ -134,7 +134,7 @@ def download_treetagger_files(langlist, logger):
         'bg': ['bulgarian'],
         'es': ['catalan', 'galician', 'spanish', 'spanish-ancora'],
         'cz': ['czech'],
-        'nl': ['dutch', 'dutch2'],
+        'nl': ['dutch'], # dutch2 model uses numerical tags
         'en': ['english'],
         'ee': ['estonian'],
         'fi': ['finnish'],
@@ -261,6 +261,10 @@ def setup_opennlp(logger):
     if not (os.path.exists(OPENNLP_MODELS_DIR) and os.path.isdir(OPENNLP_MODELS_DIR)):
         os.mkdir(OPENNLP_MODELS_DIR)
     download_opennlp_files(languages, logger)
+    # Download additional nl-chunker for dutch language
+    if 'nl' in languages:
+        get_file('nl-chunker.bin', 'https://github.com/jodaiber/model-quickstarter/raw/master/nl/nl-chunker.bin',
+                 OPENNLP_MODELS_DIR, logger)
     logger.info("Done")
 
 
