@@ -21,8 +21,7 @@ class Taggers:
             path_to_model = os.path.join(dirname, 'opennlp_models', '{}-pos-maxent.bin'.format(language))
             if not (os.path.exists(path_to_model) and os.path.isfile(path_to_model)):
                 return None
-            self.__maxent_postagger[language] = OpenNLPTagger(language=language,
-                                                              path_to_bin=os.path.join(dirname, 'apache-opennlp', 'bin'),
+            self.__maxent_postagger[language] = OpenNLPTagger(path_to_bin=os.path.join(dirname, 'apache-opennlp', 'bin'),
                                                               path_to_model=path_to_model)
         return self.__maxent_postagger[language]
 
@@ -32,8 +31,7 @@ class Taggers:
             path_to_model = os.path.join(dirname, 'opennlp_models', '{}-pos-perceptron.bin'.format(language))
             if not (os.path.exists(path_to_model) and os.path.isfile(path_to_model)):
                 return None
-            self.__perceptron_postagger[language] = OpenNLPTagger(language=language,
-                                                                  path_to_bin=os.path.join(dirname, 'apache-opennlp', 'bin'),
+            self.__perceptron_postagger[language] = OpenNLPTagger(path_to_bin=os.path.join(dirname, 'apache-opennlp', 'bin'),
                                                                   path_to_model=path_to_model)
         return self.__perceptron_postagger[language]
 

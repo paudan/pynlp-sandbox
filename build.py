@@ -88,7 +88,7 @@ def get_file(source, url, targetDir, logger):
     if not os.path.isfile(source):
         try:
             download_file(url, desc=targetDir)
-        except urllib2.HTTPError, exc:
+        except urllib2.HTTPError as exc:
             logger.error("Error downloading file from '{}'".format(url))
 
 
@@ -161,14 +161,14 @@ def download_treetagger_files(langlist, logger):
                 try:
                     download_file("{0}/{1}-par-linux-{2}-utf8.bin.gz".format(treetagger_url, path, TREETAGGER_VER),
                                   desc=TREETAGGER_DIR)
-                except urllib2.HTTPError, exc:
+                except urllib2.HTTPError as exc:
                     logger.error(exc.message)
         if lang == 'it':
             if not os.path.isfile(os.path.join(TREETAGGER_DIR,"italian-par2-linux-{0}-utf8.bin.gz".format(TREETAGGER_VER))):
                 try:
                     download_file("{0}/italian-par2-linux-{1}-utf8.bin.gz".format(treetagger_url, TREETAGGER_VER),
                                   desc=TREETAGGER_DIR)
-                except urllib2.HTTPError, exc:
+                except urllib2.HTTPError as exc:
                     logger.error(exc.message)
         # Download chunker files as well
         if chunker_map.has_key(lang):
@@ -178,7 +178,7 @@ def download_treetagger_files(langlist, logger):
 
                     download_file("{0}/{1}-chunker-par-linux-{2}-utf8.bin.gz".format(treetagger_url, chunker_map[lang], TREETAGGER_VER),
                                   desc=TREETAGGER_DIR)
-                except urllib2.HTTPError, exc:
+                except urllib2.HTTPError as exc:
                     logger.error(exc.message)
 
 
@@ -202,7 +202,7 @@ def download_opennlp_files(langlist, logger):
             if not os.path.isfile(os.path.join(OPENNLP_MODELS_DIR, file)):
                 try:
                     download_file("{0}/{1}".format(opennlp_url, file), desc=OPENNLP_MODELS_DIR)
-                except urllib2.HTTPError, exc:
+                except urllib2.HTTPError as exc:
                     logger.error(exc.message)
 
 
@@ -235,7 +235,7 @@ def setup_treetagger(logger):
         get_file("tagger-scripts.tar.gz", treetagger_url + "tagger-scripts.tar.gz", TREETAGGER_DIR, logger)
         download_treetagger_files(languages, logger)
         get_file("install-tagger.sh", treetagger_url + "install-tagger.sh", TREETAGGER_DIR, logger)
-        os.chmod(os.path.join(treetagger_install_dir, 'install-tagger.sh'), 0777)
+        os.chmod(os.path.join(treetagger_install_dir, 'install-tagger.sh'), 0o777)
         os.chdir(treetagger_install_dir)
         subprocess.Popen(['bash', 'install-tagger.sh'])
         # Return to installation directory
@@ -256,7 +256,7 @@ def setup_opennlp(logger):
     os.rename(extracted_dir, OPENNLP_DIR)
     for root, dirs, files in os.walk(os.path.join(OPENNLP_DIR, 'bin')):
         for file in files:
-            os.chmod(os.path.join(root, file), 0777)
+            os.chmod(os.path.join(root, file), 0o777)
     logger.info('Downloading OpenNLP models for selected languages')
     if not (os.path.exists(OPENNLP_MODELS_DIR) and os.path.isdir(OPENNLP_MODELS_DIR)):
         os.mkdir(OPENNLP_MODELS_DIR)
