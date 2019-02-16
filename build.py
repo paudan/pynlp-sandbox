@@ -41,7 +41,7 @@ treetagger_linux = "tree-tagger-linux-{}.1.tar.gz".format(TREETAGGER_VER)
 OPENNLP_DIR = 'apache-opennlp'
 OPENNLP_MODELS_DIR = 'opennlp_models'
 opennlp_url = 'http://opennlp.sourceforge.net/models-1.5'
-opennlp_file = 'http://www-eu.apache.org/dist/opennlp/opennlp-1.8.0/apache-opennlp-1.8.0-bin.zip'
+opennlp_file = 'https://archive.apache.org/dist/opennlp/opennlp-1.8.0/apache-opennlp-1.8.0-bin.zip'
 
 
 # Adopted from https://stackoverflow.com/questions/22676/how-do-i-download-a-file-over-http-using-python
@@ -140,10 +140,11 @@ def download_treetagger_files(langlist, logger):
         'fi': ['finnish'],
         'fr': ['french'],
         'de': ['german', 'middle-high-german'],
-        'it': ['italian', 'latin', 'latinIT'],
+        'it': ['italian', 'italian2'],
         'mo': ['mongolian'],
         'pl': ['polish'],
-        'pt': ['portuguese', 'portuguese-finegrained'],
+        'la': ['latin', 'latinIT'],
+        'pt': ['portuguese', 'portuguese-finegrained', 'portuguese'],
         'ro': ['romanian'],
         'ru': ['russian'],
         'sk': ['slovak', 'slovak2'],
@@ -157,29 +158,18 @@ def download_treetagger_files(langlist, logger):
     }
     for lang in langlist:
         for path in lang_map.get(lang, []):
-            if not os.path.isfile(os.path.join(TREETAGGER_DIR, "{0}-par-linux-{1}-utf8.bin.gz".format(path, TREETAGGER_VER))):
+            if not os.path.isfile(os.path.join(TREETAGGER_DIR, "{0}.par.gz".format(path))):
                 try:
-                    download_file("{0}/{1}-par-linux-{2}-utf8.bin.gz".format(treetagger_url, path, TREETAGGER_VER),
-                                  desc=TREETAGGER_DIR)
+                    download_file("{0}/{1}.par.gz".format(treetagger_url, path), desc=TREETAGGER_DIR)
                 except urllib2.HTTPError as exc:
-                    logger.error(exc.message)
-        if lang == 'it':
-            if not os.path.isfile(os.path.join(TREETAGGER_DIR,"italian-par2-linux-{0}-utf8.bin.gz".format(TREETAGGER_VER))):
-                try:
-                    download_file("{0}/italian-par2-linux-{1}-utf8.bin.gz".format(treetagger_url, TREETAGGER_VER),
-                                  desc=TREETAGGER_DIR)
-                except urllib2.HTTPError as exc:
-                    logger.error(exc.message)
+                    logger.error(exc.reason)
         # Download chunker files as well
-        if chunker_map.has_key(lang):
-            if not os.path.isfile(os.path.join(TREETAGGER_DIR,
-                                               "{0}-chunker-par-linux-{1}-utf8.bin.gz".format(chunker_map[lang], TREETAGGER_VER))):
+        if chunker_map.get(lang):
+            if not os.path.isfile(os.path.join(TREETAGGER_DIR, "{0}-chunker.par.gz".format(chunker_map[lang]))):
                 try:
-
-                    download_file("{0}/{1}-chunker-par-linux-{2}-utf8.bin.gz".format(treetagger_url, chunker_map[lang], TREETAGGER_VER),
-                                  desc=TREETAGGER_DIR)
+                    download_file("{0}/{1}-chunker.par.gz".format(treetagger_url, chunker_map[lang]), desc=TREETAGGER_DIR)
                 except urllib2.HTTPError as exc:
-                    logger.error(exc.message)
+                    logger.error(exc.reason)
 
 
 
@@ -203,7 +193,7 @@ def download_opennlp_files(langlist, logger):
                 try:
                     download_file("{0}/{1}".format(opennlp_url, file), desc=OPENNLP_MODELS_DIR)
                 except urllib2.HTTPError as exc:
-                    logger.error(exc.message)
+                    logger.error(exc.reason)
 
 
 @init
@@ -290,14 +280,15 @@ def copy_files(logger):
     logger.info("Copying required files..")
     srcdir, filename = os.path.split(os.path.abspath(__file__))
     global install_dir
-    shutil.copy(os.path.join(srcdir, 'chunkers.py'), install_dir)
-    shutil.copy(os.path.join(srcdir, 'taggers.py'), install_dir)
-    # Copy test files
-    shutil.copy(os.path.join(srcdir, 'tests.py'), install_dir)
-    shutil.copy(os.path.join(srcdir, 'tox.ini'), install_dir)
-    # Copy all Jupyter Notebook files
-    for file in glob.iglob(os.path.join(srcdir, "*.ipynb")):
-        shutil.copy(file, install_dir)
+    if srcdir != install_dir:
+        shutil.copy(os.path.join(srcdir, 'chunkers.py'), install_dir)
+        shutil.copy(os.path.join(srcdir, 'taggers.py'), install_dir)
+        # Copy test files
+        shutil.copy(os.path.join(srcdir, 'tests.py'), install_dir)
+        shutil.copy(os.path.join(srcdir, 'tox.ini'), install_dir)
+        # Copy all Jupyter Notebook files
+        for file in glob.iglob(os.path.join(srcdir, "*.ipynb")):
+            shutil.copy(file, install_dir)
     logger.info("Done")
 
 
