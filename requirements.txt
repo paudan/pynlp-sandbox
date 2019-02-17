@@ -3,6 +3,7 @@ GitPython==2.1.5
 tox
 nose
 discover
+pattern
 nltk>=3.2
 git+https://github.com/paudan/treetagger-python.git
 git+https://github.com/paudan/opennlp_python.git
